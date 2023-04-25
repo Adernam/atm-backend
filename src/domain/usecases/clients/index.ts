@@ -1,0 +1,6 @@
+export * from './add-client.usecase'
+export * from './update-client.usecase'
+export * from './fetch-client.usecase'
+export * from './fetch-clients.usecase'
+export * from './signin-client.usecase'
+export * from './remove-client.usecase'

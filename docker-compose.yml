@@ -1,0 +1,59 @@
+version: '3.4'
+
+volumes:
+  db_data:
+
+services:
+  db:
+    container_name: postgres-container-atm
+    image: postgres:12-alpine
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_DB=atm
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    expose:
+      - 5432
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -q -d atm -U postgres']
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  specs:
+    container_name: postgres-specs-container-atm
+    image: postgres:12-alpine
+    restart: always
+    volumes:
+      - ./data/:/home/node/app/data/
+    ports:
+      - '5433:5432'
+    environment:
+      - POSTGRES_DB=atm_specs
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  app:
+    container_name: atm-backend-api
+    image: node:19
+    working_dir: /home/node/app
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - db
+    restart: always
+    volumes:
+      - ./dist/:/home/node/app/src/
+      - ./package.json:/home/node/app/package.json
+      - ./yarn.lock:/home/node/app/yarn.lock
+      - ./.env:/home/node/app/.env
+      - ./node_modules/:/home/node/app/node_modules/
+    command: yarn start
+    ports:
+      - '3003:3003'
+      - '9222:9222'

@@ -1,0 +1,5 @@
+export * from './add-operation.controller.factory'
+export * from './update-operation.controller.factory'
+export * from './get-operation.controller.factory'
+export * from './get-operations.controller.factory'
+export * from './remove-operation.controller.factory'
